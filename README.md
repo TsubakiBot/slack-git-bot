@@ -4,6 +4,24 @@ This is a bash script that posts a message into your [Slack](https://slack.com) 
 
 Hook this script into `post-receive` for your git repositories.
 
+## Create a Bare Repo (if needed)
+
+To create a new repository named _foo.git_:
+
+```
+cd /sccs/git
+
+mkdir foo.git
+
+cd foo.git
+
+git init --bare --shared=2664
+```
+
+`--bare` ensures that the repository only contains the version control information and doesn't have any local files. This is necessary to be able to clone and push to it.
+
+`--shared=2664` sets the core.sharedRepository which forces git to do all new file creation with 2664 permissions. This helps avoid issues with multiple people pushing to the repo.
+
 ## How to Install
 
 Note: some git repositories may be "bare". You'll know if your repo is bare or not by checking for a `.git` folder where your repo lives.
