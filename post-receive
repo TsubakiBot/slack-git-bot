@@ -300,7 +300,8 @@ function notify() {
     return
   fi
 
-  curl -s \
+  # Added -k to avert SSL certificate verification
+  curl -s -k \
       -d "payload=$payload" \
       "$webhook_url" \
       >/dev/null
