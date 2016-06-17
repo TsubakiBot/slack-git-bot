@@ -26,7 +26,7 @@ function help() {
 }
 
 function replace_variables() {
-    sed "s|%repo_path%|$repopath|g;s|%old_rev_hash%|$oldrev|g;s|%new_rev_hash%|$newrev|g;s|%rev_hash%|$newrev|g;s|%repo_prefix%|$repoprefix|g"
+  sed "s|%repo_path%|$repopath|g;s|%old_rev_hash%|$oldrev|g;s|%new_rev_hash%|$newrev|g;s|%rev_hash%|$newrev|g;s|%repo_prefix%|$repoprefix|g"
 }
 
 function notify() {
@@ -147,12 +147,12 @@ function notify() {
 
   case ${change_type} in
     "create")
-      header="New ${refname_type} *${short_refname}* has been created in *${repoprefix}*"
+      header="New ${refname_type} *${short_refname}* has been created in ${repoprefix}"
       single_commit_suffix="commit"
       attachment_color="good"
       ;;
     "delete")
-      header="$(tr '[:lower:]' '[:upper:]' <<< ${refname_type:0:1})${refname_type:1} *${short_refname}* has been deleted from *${repoprefix}*"
+      header="$(tr '[:lower:]' '[:upper:]' <<< ${refname_type:0:1})${refname_type:1} *$short_refname* has been deleted from ${repoprefix}"
       single_commit_suffix="commit"
       attachment_color="danger"
       ;;
@@ -161,12 +161,12 @@ function notify() {
       branch=${3/refs\/heads\//}
 
       if [ ${num} -gt 1 ]; then
-        header="${num} new commits *pushed* to *${short_refname}* in *${repoprefix}*"
+        header="${num} new commits *pushed* to *${short_refname}* in ${repoprefix}"
         single_commit_suffix="one"
         attachment_color="good"
         s="s"
       else
-        header="A new commit has been *pushed* to *${short_refname}* in *${repoprefix}*"
+        header="A new commit has been *pushed* to *${short_refname}* in ${repoprefix}"
         single_commit_suffix="one"
         attachment_color="good"
       fi
@@ -243,7 +243,10 @@ function notify() {
 
     # Process the log and escape double quotes; assuming for now that committer names don't have five semicolons in them
     log_out=$( git log --pretty=format:"%cN;;;;;${formattedurl}${commitformat}" $countarg ${start}..${end} \
-             | sed ':a;N;$!ba;s/\n/\\n/g' \
+             | sed ':a
+             N
+             $!ba
+             s/\n/\\n/g' \
              | sed -e 's/\\/\\\\/g' \
              | sed -e 's/"/\\"/g' \
              | sed -e 's/\(.*\);;;;;\(.*\)/{"title":"\1","value":"\2","short":false},/' )
@@ -300,7 +303,6 @@ function notify() {
     return
   fi
 
-  # Added -k to avert SSL certificate verification
   curl -s -k \
       -d "payload=$payload" \
       "$webhook_url" \
