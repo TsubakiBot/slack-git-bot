@@ -147,12 +147,12 @@ function notify() {
 
   case ${change_type} in
     "create")
-      header="New ${refname_type} *${short_refname}* has been created in *${repoprefix}*"
+      header="New ${refname_type} \`${short_refname}\` has been created in *${repoprefix}*"
       single_commit_suffix="commit"
       attachment_color="good"
       ;;
     "delete")
-      header="$(tr '[:lower:]' '[:upper:]' <<< ${refname_type:0:1})${refname_type:1} *$short_refname* has been deleted from *${repoprefix}*"
+      header="$(tr '[:lower:]' '[:upper:]' <<< ${refname_type:0:1})${refname_type:1} \`${short_refname}\` has been deleted from *${repoprefix}*"
       single_commit_suffix="commit"
       attachment_color="danger"
       ;;
@@ -161,12 +161,12 @@ function notify() {
       branch=${3/refs\/heads\//}
 
       if [ ${num} -gt 1 ]; then
-        header="${num} new commits *pushed* to *${short_refname}* in *${repoprefix}*"
+        header="${num} new commits *pushed* to \`${short_refname}\` in *${repoprefix}*"
         single_commit_suffix="one"
         attachment_color="good"
         s="s"
       else
-        header="A new commit has been *pushed* to *${short_refname}* in *${repoprefix}*"
+        header="A new commit has been *pushed* to \`${short_refname}\` in *${repoprefix}*"
         single_commit_suffix="one"
         attachment_color="good"
       fi
@@ -241,10 +241,10 @@ function notify() {
       commitformat="%s"
     fi
 
-    unix_timestamp=$(date +%s)
-
-    # Process the log and escape double quotes and backslashes; assuming commit names/messages don't have five of the following: & ; @
-    log_out=$( git log --pretty=format:"&&&&&%cN;;;;;${formattedurl}${commitformat}@@@@@" $countarg ${start}..${end} \
+    # Process the log and escape double quotes and backslashes;
+    # assuming commit names/messages don't have five of the following: & ; @
+    # Added --reverse for multiple commits to display top to bottom in order
+    log_out=$( git log --reverse --pretty=format:"&&&&&%cN;;;;;${formattedurl}${commitformat}@@@@@" $countarg ${start}..${end} \
         | sed ':a
         N
         $!ba
@@ -256,13 +256,19 @@ function notify() {
         | sed -e 's/,\]/]/' )
 
     fields="[${log_out%?}]"
+    unix_timestamp=$(date +%s)
 
-    attachments="[{ \"fallback\" : \"${header}\", \"color\" : \"${attachment_color}\", \"fields\" : ${fields}, \"footer\" : \"${oldrev:0:7} .. ${newrev:0:7}\", \"ts\" : ${unix_timestamp} }]"
+    # Get author name from log
+    # authorname=$( git log --pretty=format:"%aN" $countarg ${start}..${end} )
+
+    attachments="[{ \"fallback\" : \"${header}\", \"pretext\" : \"${header}\", \"color\" : \"${attachment_color}\", \"fields\" : ${fields}, \"footer\" : \"${oldrev:0:7} .. ${newrev:0:7}\", \"ts\" : ${unix_timestamp}, \"mrkdwn_in\" : [\"text\", \"pretext\", \"fields\"] }]"
 
   fi
 
   if [ -n "${attachments}" ] && [[ "${attachments}" != "" ]]; then
-    msg=$(echo -e "\"text\":\"${header}\", \"attachments\" : $attachments")
+    # Enable if you want to use 'text' instead of including within attachment
+    # msg=$(echo -e "\"text\":\"${header}\", \"attachments\" : $attachments")
+    msg=$(echo -e "\"attachments\" : $attachments")
   else
     msg=$(echo -e "\"text\":\"${header}\"")
   fi
