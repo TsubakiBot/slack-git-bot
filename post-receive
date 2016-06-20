@@ -256,10 +256,13 @@ function notify() {
         | sed -e 's/,\]/]/' )
 
     fields="[${log_out%?}]"
-    unix_timestamp=$(date +%s)
 
-    # Get author name from log
-    # authorname=$( git log --pretty=format:"%aN" $countarg ${start}..${end} )
+    # Encode &, <, and > for Slack
+    fields=${fields//&/%26}
+    fields=${fields//</%3C}
+    fields=${fields//>/%3E}
+
+    unix_timestamp=$(date +%s)
 
     attachments="[{ \"fallback\" : \"${header}\", \"pretext\" : \"${header}\", \"color\" : \"${attachment_color}\", \"fields\" : ${fields}, \"footer\" : \"${oldrev:0:7} .. ${newrev:0:7}\", \"ts\" : ${unix_timestamp}, \"mrkdwn_in\" : [\"text\", \"pretext\", \"fields\"] }]"
 
