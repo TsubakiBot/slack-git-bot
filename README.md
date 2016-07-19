@@ -1,6 +1,6 @@
-# Git post-receive hook for Slack
+# A git post-receive hook for Slack
 
-This is a bash script that posts a message into your [Slack](https://slack.com) channel when changes are pushed.
+This article explains how to install a bash script that posts a new message into a Slack channel when commits are pushed to your project’s repository. Note that this implementation does not require the usage of GitHub, but rather git repositories hosted on your own servers.
 
 Hook this script into `post-receive` for your git repositories.
 
