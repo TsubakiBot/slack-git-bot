@@ -235,7 +235,7 @@ function notify() {
     fi
 
     # show the full commit message
-    if [ "$fullcommit" == "true" ]; then
+    if [ "$fullcommit" == "true" ] || [ "$fullcommit" != "false" ]; then
       commitformat="%s%n%n%b"
     else
       commitformat="%s"
