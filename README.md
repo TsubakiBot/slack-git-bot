@@ -8,7 +8,7 @@ Hook this script into `post-receive` for your git repositories.
 
 To create a new repository named _foo.git_:
 
-```
+```sh
 cd /sccs/git
 
 mkdir foo.git
